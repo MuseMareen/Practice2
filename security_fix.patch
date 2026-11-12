@@ -1,0 +1,27 @@
+python -c "content = '''--- a/database.py
++++ b/database.py
+@@ -47,9 +47,8 @@ def search_by_phone(phone):
+     conn = get_connection()
+     cursor = conn.cursor()
+
+-    # УЯЗВИМОСТЬ 2 (SQL Injection): Прямая подстановка пользовательского ввода в SQL-запрос
+-    query = f\"SELECT * FROM appointments WHERE phone = '{phone}'\"
+-    cursor.execute(query)
++    # ИСПРАВЛЕНИЕ: Использование параметризованного запроса
++    cursor.execute(\"SELECT * FROM appointments WHERE phone = ?\", (phone,))
+
+     results = cursor.fetchall()
+     conn.close()
+--- a/templates/admin.html
++++ b/templates/admin.html
+@@ -26,8 +26,7 @@
+                 {% for row in appointments %}
+                 <tr>
+                     <td>{{ row[0] }}</td>
+-                    <!-- УЯЗВИМОСТЬ 1 (Stored XSS): Имя клиента выводится без экранирования -->
+-                    <td>{{ row[1] | safe }}</td>
++                    <td>{{ row[1] }}</td>
+                     <td>{{ row[2] }}</td>
+                     <td>{{ row[3] }}</td>
+                     <td>{{ row[4] }}</td>
+'''; open('security_fix.patch', 'w', encoding='utf-8', newline='\n').write(content)"

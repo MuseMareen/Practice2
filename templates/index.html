@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Beauty Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="top-bar">
+        <h1>Салон красоты «Beauty Studio»</h1>
+        <a href="/admin" class="admin-btn">Панель администратора</a>
+    </header>
+
+    <div class="section">
+        <h2>Наши преимущества</h2>
+        <ul>
+            <li>Опытные топ-стилисты и визажисты со стажем от 7 лет</li>
+            <li>Премиальная гипоаллергенная косметика</li>
+            <li>Уютная атмосфера, бесплатный кофе и десерты</li>
+            <li>Удобное расположение в центре города</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Услуги и цены</h2>
+        <table>
+            <tr><th>Услуга</th><th>Цена</th></tr>
+            <tr><td>Стрижки и укладки</td><td>от 2 500 руб.</td></tr>
+            <tr><td>Окрашивание</td><td>от 5 000 руб.</td></tr>
+            <tr><td>Биозавивка</td><td>от 4 500 руб.</td></tr>
+            <tr><td>Маникюр и педикюр</td><td>от 2 000 руб.</td></tr>
+            <tr><td>Макияж</td><td>от 3 000 руб.</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Онлайн-запись</h2>
+        <form method="POST" action="/book">
+            <input type="text" name="first_name" placeholder="Имя" required>
+            <input type="text" name="last_name" placeholder="Фамилия" required>
+            <select name="service">
+                <option value="Стрижки и укладки">Стрижки и укладки</option>
+                <option value="Окрашивание">Окрашивание</option>
+                <option value="Биозавивка">Биозавивка</option>
+                <option value="Маникюр и педикюр">Маникюр и педикюр</option>
+                <option value="Макияж">Макияж</option>
+            </select>
+            <input type="datetime-local" name="visit_time" required>
+            <input type="text" name="phone" placeholder="Телефон (например, +79991234567)" required>
+            <button type="submit">Записаться</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Проверить запись по номеру телефона</h2>
+        <form method="GET" action="/search">
+            <input type="text" name="phone" placeholder="Введите номер телефона">
+            <button type="submit">Найти запись</button>
+        </form>
+        {% if search_results is not none %}
+            <h3>Результаты поиска:</h3>
+            {% if search_results %}
+                <ul>
+                {% for row in search_results %}
+                    <li>{{ row['first_name'] }} {{ row['last_name'] }} — {{ row['service'] }} ({{ row['visit_time'] }}) | Тел: {{ row['phone'] }}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>Записей не найдено.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Отзывы наших клиентов</h2>
+        <p><b>Анна К.:</b> «Делала сложное окрашивание, результат превзошел все ожидания!»</p>
+        <p><b>Мария В.:</b> «Лучший маникюр в городе, держится больше месяца без сколов.»</p>
+    </div>
+
+    <div class="section">
+        <h2>Последние записи (Табло клиентов)</h2>
+        {% if recent_appointments %}
+            <ul>
+            {% for item in recent_appointments %}
+                <li>Клиент: {{ item['first_name'] }} {{ item['last_name'] }} | Услуга: {{ item['service'] }} | Время: {{ item['visit_time'] }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>Пока нет активных записей.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
